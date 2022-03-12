@@ -1,3 +1,4 @@
+import random
 import spotipy
 from spotipy import oauth2
 
@@ -21,7 +22,7 @@ def get_current_user_playlists(spotify_manager):
     playlists = spotify_manager.user_playlists(current_user.get('id'))
     return [playlist.get('name') for playlist in playlists.get('items')]
 
-def create_coachella_playlist(artist_ids, client_id, client_secret, custom_playlist_name, num_tracks_per_artist):
+def create_coachella_playlist(artist_ids, client_id, client_secret, custom_playlist_name, num_tracks_per_artist, order):
     spotify_manager = authorize_and_get_spotipy_manager(client_id, client_secret)
 
     # aggregate all songs for playlist
@@ -29,6 +30,8 @@ def create_coachella_playlist(artist_ids, client_id, client_secret, custom_playl
     for artist_id in artist_ids:
         track_ids = get_top_tracks_ids_for_artist_id(spotify_manager, artist_id, num_tracks_per_artist)
         all_track_ids.extend(track_ids)
+    if order == 'shuffle':
+        random.shuffle(all_track_ids)
 
     # check if requested playlist name already exists
     playlist_name = custom_playlist_name or 'My Coachella 2022 Playlist'

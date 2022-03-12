@@ -13,8 +13,11 @@ def sanitize_artist_list(parsed_artists):
             sanitized_list.append(artist)
     return sanitized_list
 
-def get_artist_ids_for_artists(artists):
-    return [ARTISTS_TO_IDS.get(artist) for artist in artists]
+def get_artist_ids_for_artists(artists, order):
+    artist_ids = [ARTISTS_TO_IDS.get(artist) for artist in artists]
+    if order == 'reverse':
+        artist_ids.reverse()
+    return artist_ids
 
 def parse_artists_from_file(filename):
     with open(filename, 'r') as f:
