@@ -1,33 +1,21 @@
 import argparse
-from consts import ALL_ARTISTS
-
-
-def sanitize_artist_list(parsed_artists):
-    # This function removes artists not performing at Coachella 2022 and sanitizes names
-    # for misspellings.
-    all_artists_lowercased = [artist.lower() for artist in ALL_ARTISTS]
-    sanitized_list = []
-    for parsed_artist in parsed_artists:
-        if parsed_artist.lower() in all_artists_lowercased:
-            artist_index = all_artists_lowercased.index(parsed_artist.lower())
-            sanitized_list.append(ALL_ARTISTS[artist_index])
-
-    return sanitized_list
-
-def parse_artists_from_file(filename):
-    with open(filename, 'r') as f:
-        artists = f.read().splitlines()
-
-    artists = sanitize_artist_list(artists)
-    return artists
+from parse_logic import parse_artists_from_file
+from parse_logic import get_artist_ids_for_artists
+from spotify_logic import create_coachella_playlist
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-t', '--textfile', help='Provide .txt file of artists')
+    parser.add_argument('-t', '--textfile', help='Path to .txt file of artists')
+    parser.add_argument('-c', '--clientid', help='Spotify client ID')
+    parser.add_argument('-s', '--secret', help='Spotify client secret')
+    parser.add_argument('-p', '--playlistname', default='', help='Name of custom playlist')
+    parser.add_argument('-n', '--numtracks', default=5, help='Number of tracks to select per artist')
     args = parser.parse_args()
 
-    if not args.textfile:
-        print('You need to provide a .txt file param.')
+    if not args.textfile or not args.clientid or not args.secret:
+        print('You need to provide a .txt file param as well as a Spotify client ID and secret.')
     else:
         artists = parse_artists_from_file(args.textfile)
-        print('Artists: {parsed_artists}'.format(parsed_artists=artists))
+        artist_ids = get_artist_ids_for_artists(artists)
+        playlist_url = create_coachella_playlist(artist_ids, args.clientid, args.secret, args.playlistname, args.numtracks)
+        print('Created your Coachella playlist! {url}'.format(url=playlist_url))
