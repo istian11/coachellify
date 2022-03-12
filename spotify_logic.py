@@ -1,9 +1,8 @@
 import spotipy
-import spotify_config
 from spotipy import oauth2
 
 SPOTIPY_REDIRECT_URI = 'http://localhost:8080'
-SCOPE = ('user-library-read,user-read-currently-playing,playlist-read-private,playlist-modify-private,playlist-modify-public,user-read-private')
+SCOPE = ('user-library-read,playlist-read-private,playlist-modify-private,playlist-modify-public,user-read-private')
 
 def authorize_and_get_spotipy_manager(client_id, client_secret):
     sp_oauth = oauth2.SpotifyOAuth(client_id, client_secret, SPOTIPY_REDIRECT_URI, scope=SCOPE)
